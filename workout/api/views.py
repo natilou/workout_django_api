@@ -1,5 +1,5 @@
 from django_filters import rest_framework as filters
-from rest_framework import generics, viewsets
+from rest_framework import viewsets
 
 from .filters import ExerciseFilter
 from .models import Category, Equipment, Exercise, Force, Level, Mechanic, Muscle
