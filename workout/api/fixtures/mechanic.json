@@ -1,0 +1,23 @@
+[
+    {
+        "model": "api.mechanic",
+        "pk": 1,
+        "fields": {
+            "name": "compound"
+        }
+    },
+    {
+        "model": "api.mechanic",
+        "pk": 2,
+        "fields": {
+            "name": null
+        }
+    },
+    {
+        "model": "api.mechanic",
+        "pk": 3,
+        "fields": {
+            "name": "isolation"
+        }
+    }
+]

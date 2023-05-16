@@ -1,0 +1,121 @@
+[
+    {
+        "model": "api.muscle",
+        "pk": 1,
+        "fields": {
+            "name": "abs"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 2,
+        "fields": {
+            "name": "lower back"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 3,
+        "fields": {
+            "name": "forearms"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 4,
+        "fields": {
+            "name": "lats"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 5,
+        "fields": {
+            "name": "traps"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 6,
+        "fields": {
+            "name": "biceps"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 7,
+        "fields": {
+            "name": "middle back"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 8,
+        "fields": {
+            "name": "glutes"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 9,
+        "fields": {
+            "name": "chest"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 10,
+        "fields": {
+            "name": "neck"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 11,
+        "fields": {
+            "name": "shoulders"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 12,
+        "fields": {
+            "name": "adductors"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 13,
+        "fields": {
+            "name": "calves"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 14,
+        "fields": {
+            "name": "hamstrings"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 15,
+        "fields": {
+            "name": "quadriceps"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 16,
+        "fields": {
+            "name": "abductors"
+        }
+    },
+    {
+        "model": "api.muscle",
+        "pk": 17,
+        "fields": {
+            "name": "triceps"
+        }
+    }
+]

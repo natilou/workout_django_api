@@ -1,0 +1,23 @@
+[
+    {
+        "model": "api.level",
+        "pk": 1,
+        "fields": {
+            "name": "expert"
+        }
+    },
+    {
+        "model": "api.level",
+        "pk": 2,
+        "fields": {
+            "name": "intermediate"
+        }
+    },
+    {
+        "model": "api.level",
+        "pk": 3,
+        "fields": {
+            "name": "beginner"
+        }
+    }
+]
