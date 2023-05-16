@@ -1,0 +1,93 @@
+[
+    {
+        "model": "api.equipment",
+        "pk": 1,
+        "fields": {
+            "name": "e-z curl bar"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 2,
+        "fields": {
+            "name": "barbell"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 3,
+        "fields": {
+            "name": "kettlebells"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 4,
+        "fields": {
+            "name": "bands"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 5,
+        "fields": {
+            "name": "medicine ball"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 6,
+        "fields": {
+            "name": "exercise ball"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 7,
+        "fields": {
+            "name": "dumbbell"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 8,
+        "fields": {
+            "name": "foam roll"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 9,
+        "fields": {
+            "name": "body only"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 10,
+        "fields": {
+            "name": "machine"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 11,
+        "fields": {
+            "name": "other"
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 12,
+        "fields": {
+            "name": null
+        }
+    },
+    {
+        "model": "api.equipment",
+        "pk": 13,
+        "fields": {
+            "name": "cable"
+        }
+    }
+]
