@@ -1,15 +1,7 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import (
-    Category,
-    Equipment,
-    Exercise,
-    Force,
-    Image,
-    Level,
-    Mechanic,
-    Muscle,
-)
+from .models import Category, Equipment, Exercise, Force, Image, Level, Mechanic, Muscle
 
 
 class MuscleGroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -79,3 +71,15 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Image
         fields = ["id", "name", "exercise"]
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "email", "url"]
+
+
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "password"]
