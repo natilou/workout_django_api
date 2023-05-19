@@ -1,5 +1,6 @@
+from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
-from rest_framework import viewsets
+from rest_framework import permissions, viewsets
 
 from .filters import ExerciseFilter
 from .models import Category, Equipment, Exercise, Force, Level, Mechanic, Muscle
@@ -11,6 +12,8 @@ from .serializers import (
     LevelSerializer,
     MechanicSerializer,
     MuscleGroupSerializer,
+    ProfileSerializer,
+    UserSerializer,
 )
 
 
@@ -77,3 +80,28 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     serializer_class = ExerciseSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ExerciseFilter
+
+
+class UsersViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+
+    queryset = User.objects.all().order_by("-date_joined")
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+
+class ProfileDetailViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows user to view or edit own profile.
+    """
+
+    queryset = User.objects.none()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "username"
+
+    def get_queryset(self):
+        username = self.request.user.username
+        return User.objects.filter(username=username)
