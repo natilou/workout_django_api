@@ -1,18 +1,26 @@
 from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
-from rest_framework import permissions, viewsets
+from rest_framework import generics, permissions, status, views, viewsets
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import (
+    BlacklistedToken,
+    OutstandingToken,
+    RefreshToken,
+)
 
 from .filters import ExerciseFilter
 from .models import Category, Equipment, Exercise, Force, Level, Mechanic, Muscle
 from .serializers import (
     CategorySerializer,
+    ChangePasswordSerializer,
     EquipmentSerializer,
     ExerciseSerializer,
     ForceSerializer,
     LevelSerializer,
     MechanicSerializer,
     MuscleGroupSerializer,
-    ProfileSerializer,
+    RegisterSerializer,
+    UpdateUserSerializer,
     UserSerializer,
 )
 
@@ -92,16 +100,44 @@ class UsersViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
 
 
-class ProfileDetailViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows user to view or edit own profile.
-    """
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = RegisterSerializer
 
-    queryset = User.objects.none()
-    serializer_class = ProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    lookup_field = "username"
 
-    def get_queryset(self):
-        username = self.request.user.username
-        return User.objects.filter(username=username)
+class ChangePasswordView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = ChangePasswordSerializer
+
+
+class UpdateProfileView(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UpdateUserSerializer
+
+
+class LogoutView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutAllView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        tokens = OutstandingToken.objects.filter(user_id=request.user.id)
+        for token in tokens:
+            t, _ = BlacklistedToken.objects.get_or_create(token=token)
+
+        return Response(status=status.HTTP_205_RESET_CONTENT)
