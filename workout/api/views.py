@@ -98,6 +98,7 @@ class UsersViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+    lookup_field = "username"
 
 
 class RegisterView(generics.CreateAPIView):
