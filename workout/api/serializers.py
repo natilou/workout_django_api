@@ -75,10 +75,10 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["id", "name", "exercise"]
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email", "url"]
+        fields = ["username", "email"]
 
 
 class RegisterSerializer(serializers.HyperlinkedModelSerializer):
@@ -210,3 +210,5 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+
