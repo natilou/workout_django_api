@@ -1,11 +1,15 @@
 [run]
 source =
-   api
+   workout/api
 omit = 
    */__init__.py
    */migrations/*
    */apps.py
    */test*
+   coverage.*
+   */workout/workout/*
+   */conftest.py
+   */manage.py
 
 [report]
 exclude_lines=

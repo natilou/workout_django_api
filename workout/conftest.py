@@ -1,5 +1,10 @@
 import pytest
-from rest_framework.test import APIClient
+import os
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "workout.settings")
+django.setup()
+from rest_framework.test import APIClient  # noqa
 
 
 @pytest.fixture()
