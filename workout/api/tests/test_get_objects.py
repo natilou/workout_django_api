@@ -9,7 +9,7 @@ def test_get_equipment_list(api_client_user, Equipment):
     resp = api_client_user.get("/equipments/")
 
     assert resp.status_code == 200
-    assert len(resp.json()["results"]) == 5
+    assert len(resp.json()["results"]) == 6
 
 
 def test_get_category_list(api_client_user, Category):
