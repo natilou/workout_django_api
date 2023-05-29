@@ -1,7 +1,3 @@
-from api.models import Category, Equipment, Force, Level, Mechanic, Muscle
-from rest_framework.test import APIClient
-
-
 def test_get_level_list(api_client_user, Level):
     resp = api_client_user.get("/levels/")
 
