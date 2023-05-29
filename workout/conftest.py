@@ -61,6 +61,7 @@ def Equipment():
     Equipment.objects.create(name="cable")
     Equipment.objects.create(name="kettlebells")
     Equipment.objects.create(name="machine")
+    Equipment.objects.create(name="dumbbell")
 
     return Equipment
 
