@@ -18,7 +18,7 @@ black = "*"
 django-debug-toolbar = "*"
 pytest = "*"
 pytest-django = "*"
-coverage = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.10"
