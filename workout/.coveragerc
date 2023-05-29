@@ -1,0 +1,12 @@
+[run]
+source =
+   api
+omit = 
+   */__init__.py
+   */migrations/*
+   */apps.py
+   */test*
+
+[report]
+exclude_lines=
+   def test_

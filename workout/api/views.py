@@ -2,37 +2,18 @@ from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
 from rest_framework import generics, permissions, status, views, viewsets
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import (
-    BlacklistedToken,
-    OutstandingToken,
-    RefreshToken,
-)
+from rest_framework_simplejwt.tokens import (BlacklistedToken,
+                                             OutstandingToken, RefreshToken)
 
 from .filters import ExerciseFilter
-from .models import (
-    Category,
-    Equipment,
-    Exercise,
-    Force,
-    Level,
-    Mechanic,
-    Muscle,
-    Workout,
-)
-from .serializers import (
-    CategorySerializer,
-    ChangePasswordSerializer,
-    EquipmentSerializer,
-    ExerciseSerializer,
-    ForceSerializer,
-    LevelSerializer,
-    MechanicSerializer,
-    MuscleGroupSerializer,
-    RegisterSerializer,
-    UpdateUserSerializer,
-    UserSerializer,
-    WorkoutSerializer,
-)
+from .models import (Category, Equipment, Exercise, Force, Level, Mechanic,
+                     Muscle, Workout)
+from .serializers import (CategorySerializer, ChangePasswordSerializer,
+                          EquipmentSerializer, ExerciseSerializer,
+                          ForceSerializer, LevelSerializer, MechanicSerializer,
+                          MuscleGroupSerializer, RegisterSerializer,
+                          UpdateUserSerializer, UserSerializer,
+                          WorkoutSerializer)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
