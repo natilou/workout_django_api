@@ -1,3 +1,5 @@
+import random
+
 from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
 from rest_framework import generics, permissions, status, views, viewsets
@@ -9,7 +11,16 @@ from rest_framework_simplejwt.tokens import (
 )
 
 from .filters import ExerciseFilter
-from .models import Category, Equipment, Exercise, Force, Level, Mechanic, Muscle
+from .models import (
+    Category,
+    Equipment,
+    Exercise,
+    Force,
+    Level,
+    Mechanic,
+    Muscle,
+    Workout,
+)
 from .serializers import (
     CategorySerializer,
     ChangePasswordSerializer,
@@ -22,6 +33,7 @@ from .serializers import (
     RegisterSerializer,
     UpdateUserSerializer,
     UserSerializer,
+    WorkoutSerializer,
 )
 
 
@@ -142,3 +154,8 @@ class LogoutAllView(views.APIView):
             t, _ = BlacklistedToken.objects.get_or_create(token=token)
 
         return Response(status=status.HTTP_205_RESET_CONTENT)
+
+
+class WorkoutViewSet(viewsets.ModelViewSet):
+    serializer_class = WorkoutSerializer
+    queryset = Workout.objects.all()

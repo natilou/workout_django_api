@@ -1,3 +1,5 @@
-# from django.contrib import admin
+from django.contrib import admin
+from api.models import Workout, WorkoutExercise
 
-# Register your models here.
+admin.site.register(Workout, admin.ModelAdmin)
+admin.site.register(WorkoutExercise, admin.ModelAdmin)

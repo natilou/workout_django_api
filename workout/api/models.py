@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Muscle(models.Model):
     name = models.CharField(max_length=100)
@@ -96,3 +94,20 @@ class Image(models.Model):
 
     class Meta:
         app_label = "api"
+
+
+class Workout(models.Model):
+    created = models.DateField(auto_now_add=True)
+    exercises = models.ManyToManyField(Exercise, through="WorkoutExercise", related_name="workouts")
+
+
+class WorkoutExercise(models.Model):
+    workout = models.ForeignKey(
+        Workout, on_delete=models.CASCADE, related_name="workouts_exercises"
+    )
+
+    exercise = models.ForeignKey(
+        Exercise, on_delete=models.CASCADE, related_name="workouts_exercises"
+    )
+    reps = models.IntegerField(default=5)
+    sets = models.IntegerField(default=5)
