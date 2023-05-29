@@ -1,0 +1,55 @@
+name: Test
+on:
+  workflow_call: 
+  # Allows you to call this workflow within another workflow
+  workflow_dispatch: 
+  # Allows you to run this workflow manually from the Actions tab
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DB_NAME=test
+      DB_USER=postgres
+      DB_PASSWORD=postgres
+      DB_HOST=localhost
+      DB_PORT=5432  
+      POSTGRES_DB=test-db
+    services:
+      postgres:
+        image: postgres:15.3
+        env:
+          POSTGRES_PASSWORD=${{ env.DB_PASSWORD }}
+          POSTGRES_USER=${{ DB_USER }}
+          POSTGRES_DB=${{ POSTGRES_DB }}
+        ports:
+          5432:5432
+        options: >-
+          --health-cmd pg_isready 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+    strategy:
+      matrix:
+        python-version: ["3.10"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          pip install pipenv --system
+          pipenv install --dev 
+      - name: Flake8 checks
+        run: pipenv run flake8
+      - name: Run unit tests and collect coverage
+        run: pytest -vv && coverage report -m
+      - name: Upload coverage reports to Codecov with GitHub Action
+        uses: codecov/codecov-action@v3
+       
+

@@ -6,18 +6,8 @@ from django.db.models import F, Max, Q
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import (
-    Category,
-    Equipment,
-    Exercise,
-    Force,
-    Image,
-    Level,
-    Mechanic,
-    Muscle,
-    Workout,
-    WorkoutExercise,
-)
+from .models import (Category, Equipment, Exercise, Force, Image, Level,
+                     Mechanic, Muscle, Workout, WorkoutExercise)
 
 
 class MuscleGroupSerializer(serializers.HyperlinkedModelSerializer):
