@@ -1,5 +1,3 @@
-import random
-
 from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
 from rest_framework import generics, permissions, status, views, viewsets

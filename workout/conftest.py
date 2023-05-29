@@ -1,10 +1,4 @@
-import os
-
-import django
 import pytest
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "workout.settings")
-django.setup()
 from rest_framework.test import APIClient
 
 
@@ -123,6 +117,3 @@ def Force():
     Force.objects.create(name="static")
 
     return Force
-
-
-

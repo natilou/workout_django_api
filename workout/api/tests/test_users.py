@@ -1,6 +1,3 @@
-
-from rest_framework.test import APIClient
-
 def test_get_client_user_needs_token(api_client_user):
     resp = api_client_user.get("/users/")
     assert resp.status_code == 403
