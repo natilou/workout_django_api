@@ -1,9 +1,23 @@
+import random
+
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.db.models import F, Max, Q
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from .models import Category, Equipment, Exercise, Force, Image, Level, Mechanic, Muscle
+from .models import (
+    Category,
+    Equipment,
+    Exercise,
+    Force,
+    Image,
+    Level,
+    Mechanic,
+    Muscle,
+    Workout,
+    WorkoutExercise,
+)
 
 
 class MuscleGroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -212,3 +226,94 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class WorkoutSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(write_only=True, allow_blank=True)
+    mechanic = serializers.CharField(write_only=True, allow_blank=True)
+    equipment = serializers.CharField(write_only=True, allow_blank=True)
+    level = serializers.CharField(write_only=True, allow_blank=True)
+    force = serializers.CharField(write_only=True, allow_blank=True)
+    primary_muscles = serializers.CharField(write_only=True, allow_blank=True)
+    secondary_muscles = serializers.CharField(write_only=True, allow_blank=True)
+    exercises = ExerciseSerializer(read_only=True, many=True)
+    reps_per_exercise = serializers.SerializerMethodField()
+    total_sets = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Workout
+        fields = [
+            "created",
+            "exercises",
+            "category",
+            "mechanic",
+            "equipment",
+            "level",
+            "force",
+            "primary_muscles",
+            "secondary_muscles",
+            "reps_per_exercise",
+            "total_sets",
+        ]
+
+    def create(self, validated_data):
+        q = Q()
+
+        if validated_data.get("category"):
+            q &= Q(category__name__iexact=validated_data["category"])
+        if validated_data.get("mechanic"):
+            q &= Q(mechanic__name__iexact=validated_data["mechanic"])
+        if validated_data.get("level"):
+            q &= Q(level__name__iexact=validated_data["level"])
+        if validated_data.get("force"):
+            q &= Q(force__name__iexact=validated_data["force"])
+        if validated_data.get("primary_muscles"):
+            q &= Q(
+                muscle_per_exercise__muscle__name__iexact=validated_data[
+                    "primary_muscles"
+                ],
+                muscle_per_exercise__is_primary_muscle=True,
+            )
+        if validated_data.get("secondary_muscles"):
+            q &= Q(
+                muscle_per_exercise__muscle__name__iexact=validated_data[
+                    "secondary_muscles"
+                ],
+                muscle_per_exercise__is_primary_muscle=False,
+            )
+
+        filtered_exercises = Exercise.objects.filter(q)
+        quantity = len(filtered_exercises) if len(filtered_exercises) < 10 else 10
+        exercises = random.sample(list(filtered_exercises), k=quantity)
+        workout = Workout.objects.create()
+        workout_exercises = []
+        for exercise in exercises:
+            workout_exercises.append(
+                WorkoutExercise(workout=workout, exercise=exercise)
+            )
+        WorkoutExercise.objects.bulk_create(workout_exercises)
+
+        return workout
+
+    def get_reps_per_exercise(self, obj):
+        workout = Workout.objects.get(id=obj.id)
+        exercises = workout.exercises.all()
+        return (
+            Exercise.objects.filter(id__in=list(exercises.values_list("id", flat=True)))
+            .annotate(
+                total_reps=F("workouts_exercises__reps"),
+            )
+            .values("name", "total_reps")
+        )
+
+    def get_total_sets(self, obj):
+        workout = Workout.objects.get(id=obj.id)
+        exercises = workout.exercises.all()
+        return (
+            Exercise.objects.filter(id__in=list(exercises.values_list("id", flat=True)))
+            .annotate(
+                total_sets=F("workouts_exercises__sets"),
+            )
+            .values("total_sets")
+        ).aggregate(Max("total_sets"))
+
+    # TODO: investigate if these last two methods can be more efficient.
+    # TODO: receive list of primary and seconday muscles
