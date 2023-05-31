@@ -45,6 +45,6 @@ jobs:
       - name: Flake8 checks
         run: pipenv run flake8
       - name: Run unit tests and collect coverage
-        run: python -m pytest -vv --tb=native --create-db --nomigrations --cov=./workout 
+        run: python -m pytest -vv --tb=native --create-db --nomigrations --cov-report term-missing --cov=./workout 
       - name: Upload coverage reports to Codecov with GitHub Action
         uses: codecov/codecov-action@v3
