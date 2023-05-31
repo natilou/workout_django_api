@@ -2,18 +2,38 @@ from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
 from rest_framework import generics, permissions, status, views, viewsets
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import (BlacklistedToken,
-                                             OutstandingToken, RefreshToken)
+from rest_framework_simplejwt.tokens import (
+    BlacklistedToken,
+    OutstandingToken,
+    RefreshToken,
+)
 
 from .filters import ExerciseFilter
-from .models import (Category, Equipment, Exercise, Force, Level, Mechanic,
-                     Muscle, Workout)
-from .serializers import (CategorySerializer, ChangePasswordSerializer,
-                          EquipmentSerializer, ExerciseSerializer,
-                          ForceSerializer, LevelSerializer, MechanicSerializer,
-                          MuscleGroupSerializer, RegisterSerializer,
-                          UpdateUserSerializer, UserSerializer,
-                          WorkoutSerializer)
+from .models import (
+    Category,
+    Equipment,
+    Exercise,
+    Force,
+    Level,
+    Mechanic,
+    Muscle,
+    Workout,
+)
+from .permissions import UserPermission
+from .serializers import (
+    CategorySerializer,
+    ChangePasswordSerializer,
+    EquipmentSerializer,
+    ExerciseSerializer,
+    ForceSerializer,
+    LevelSerializer,
+    MechanicSerializer,
+    MuscleGroupSerializer,
+    RegisterSerializer,
+    UpdateUserSerializer,
+    UserSerializer,
+    WorkoutSerializer,
+)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -23,6 +43,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     queryset = Category.objects.all().order_by("name")
     serializer_class = CategorySerializer
+    permission_classes = [UserPermission]
 
 
 class EquipmentViewSet(viewsets.ModelViewSet):
@@ -32,6 +53,7 @@ class EquipmentViewSet(viewsets.ModelViewSet):
 
     queryset = Equipment.objects.all().order_by("name")
     serializer_class = EquipmentSerializer
+    permission_classes = [UserPermission]
 
 
 class LevelViewSet(viewsets.ModelViewSet):
@@ -41,6 +63,7 @@ class LevelViewSet(viewsets.ModelViewSet):
 
     queryset = Level.objects.all().order_by("name")
     serializer_class = LevelSerializer
+    permission_classes = [UserPermission]
 
 
 class MechanicViewSet(viewsets.ModelViewSet):
@@ -50,6 +73,7 @@ class MechanicViewSet(viewsets.ModelViewSet):
 
     queryset = Mechanic.objects.all().order_by("name")
     serializer_class = MechanicSerializer
+    permission_classes = [UserPermission]
 
 
 class MuscleViewSet(viewsets.ModelViewSet):
@@ -59,6 +83,7 @@ class MuscleViewSet(viewsets.ModelViewSet):
 
     queryset = Muscle.objects.all().order_by("name")
     serializer_class = MuscleGroupSerializer
+    permission_classes = [UserPermission]
 
 
 class ForceViewSet(viewsets.ModelViewSet):
@@ -68,6 +93,7 @@ class ForceViewSet(viewsets.ModelViewSet):
 
     queryset = Force.objects.all().order_by("name")
     serializer_class = ForceSerializer
+    permission_classes = [UserPermission]
 
 
 class ExerciseViewSet(viewsets.ModelViewSet):
@@ -79,6 +105,7 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     serializer_class = ExerciseSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ExerciseFilter
+    permission_classes = [UserPermission]
 
 
 class UsersViewSet(viewsets.ModelViewSet):
