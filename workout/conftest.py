@@ -1,6 +1,7 @@
-import pytest
 import os
+
 import django
+import pytest
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "workout.settings")
 django.setup()
@@ -110,6 +111,7 @@ def Muscle():
     Muscle.objects.create(name="triceps")
     Muscle.objects.create(name="shoulders")
     Muscle.objects.create(name="neck")
+    Muscle.objects.create(name="quadriceps")
 
     return Muscle
 
@@ -123,3 +125,69 @@ def Force():
     Force.objects.create(name="static")
 
     return Force
+
+
+@pytest.fixture()
+def Exercise(Level, Category, Mechanic, Equipment, Force):
+    from api.models import Exercise
+
+    Exercise.objects.create(
+        name="Press Sit-Up",
+        instructions="steps to do it",
+        category=Category.objects.get(name="strength"),
+        mechanic=Mechanic.objects.get(name="compound"),
+        equipment=Equipment.objects.get(name="barbell"),
+        level=Level.objects.get(name="Expert"),
+        force=Force.objects.get(name="pull"),
+    )
+
+    Exercise.objects.create(
+        name="Deadlift with Chains",
+        instructions="steps to do it",
+        category=Category.objects.get(name="strength"),
+        mechanic=Mechanic.objects.get(name="compound"),
+        equipment=Equipment.objects.get(name="barbell"),
+        level=Level.objects.get(name="Expert"),
+        force=Force.objects.get(name="pull"),
+    )
+
+    Exercise.objects.create(
+        name="Barbell Squat To A Bench",
+        instructions="steps to do it",
+        category=Category.objects.get(name="strength"),
+        mechanic=Mechanic.objects.get(name="compound"),
+        equipment=Equipment.objects.get(name="barbell"),
+        level=Level.objects.get(name="Expert"),
+        force=Force.objects.get(name="push"),
+    )
+
+    return Exercise
+
+
+@pytest.fixture()
+def MusclePerExercise(Muscle, Exercise):
+    from api.models import MusclePerExercise
+
+    MusclePerExercise.objects.create(
+        muscle=Muscle.objects.get(name="quadriceps"),
+        exercise=Exercise.objects.get(name="Barbell Squat To A Bench"),
+        is_primary_muscle=True
+    )
+
+    MusclePerExercise.objects.create(
+        muscle=Muscle.objects.get(name="forearms"),
+        exercise=Exercise.objects.get(name="Deadlift with Chains"),
+        is_primary_muscle=False
+    )
+
+    MusclePerExercise.objects.create(
+        muscle=Muscle.objects.get(name="abs"),
+        exercise=Exercise.objects.get(name="Press Sit-Up"),
+        is_primary_muscle=True
+    )
+
+    MusclePerExercise.objects.create(
+        muscle=Muscle.objects.get(name="shoulders"),
+        exercise=Exercise.objects.get(name="Press Sit-Up"),
+        is_primary_muscle=False
+    )

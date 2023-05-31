@@ -1,7 +1,7 @@
 import json
 import sys
 
-from constants import models
+from .constants import models
 
 
 def read_json(field: str) -> None:
