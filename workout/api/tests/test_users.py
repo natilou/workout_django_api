@@ -54,7 +54,7 @@ def test_admin_user_can_create_muscle(api_client_admin):
     resp = api_client_admin.post("/muscles/", {"name": "oblique abs"})
 
     assert resp.status_code == 201
-    assert resp.json() == {'id': 11, 'name': 'oblique abs'}
+    assert resp.json() == {'id': 12, 'name': 'oblique abs'}
 
 
 def test_admin_user_can_create_force(api_client_admin):

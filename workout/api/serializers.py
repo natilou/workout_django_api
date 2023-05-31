@@ -1,10 +1,11 @@
-import random
 
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
-from django.db.models import F, Max, Q
+from django.db.models import F, Max
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+
+from .helpers import get_queries, get_filtered_exercises
 
 from .models import (Category, Equipment, Exercise, Force, Image, Level,
                      Mechanic, Muscle, Workout, WorkoutExercise)
@@ -217,13 +218,12 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 
 class WorkoutSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(write_only=True, allow_blank=True)
-    mechanic = serializers.CharField(write_only=True, allow_blank=True)
-    equipment = serializers.CharField(write_only=True, allow_blank=True)
-    level = serializers.CharField(write_only=True, allow_blank=True)
-    force = serializers.CharField(write_only=True, allow_blank=True)
-    primary_muscles = serializers.CharField(write_only=True, allow_blank=True)
-    secondary_muscles = serializers.CharField(write_only=True, allow_blank=True)
+    category = serializers.CharField(write_only=True, allow_blank=True, required=False)
+    mechanic = serializers.CharField(write_only=True, allow_blank=True, required=False)
+    equipment = serializers.CharField(write_only=True, allow_blank=True, required=False)
+    level = serializers.CharField(write_only=True, allow_blank=True, required=False)
+    force = serializers.CharField(write_only=True, allow_blank=True, required=False)
+    muscles = serializers.ListField(write_only=True, required=False)
     exercises = ExerciseSerializer(read_only=True, many=True)
     reps_per_exercise = serializers.SerializerMethodField()
     total_sets = serializers.SerializerMethodField()
@@ -238,41 +238,14 @@ class WorkoutSerializer(serializers.ModelSerializer):
             "equipment",
             "level",
             "force",
-            "primary_muscles",
-            "secondary_muscles",
+            "muscles",
             "reps_per_exercise",
             "total_sets",
         ]
 
     def create(self, validated_data):
-        q = Q()
-
-        if validated_data.get("category"):
-            q &= Q(category__name__iexact=validated_data["category"])
-        if validated_data.get("mechanic"):
-            q &= Q(mechanic__name__iexact=validated_data["mechanic"])
-        if validated_data.get("level"):
-            q &= Q(level__name__iexact=validated_data["level"])
-        if validated_data.get("force"):
-            q &= Q(force__name__iexact=validated_data["force"])
-        if validated_data.get("primary_muscles"):
-            q &= Q(
-                muscle_per_exercise__muscle__name__iexact=validated_data[
-                    "primary_muscles"
-                ],
-                muscle_per_exercise__is_primary_muscle=True,
-            )
-        if validated_data.get("secondary_muscles"):
-            q &= Q(
-                muscle_per_exercise__muscle__name__iexact=validated_data[
-                    "secondary_muscles"
-                ],
-                muscle_per_exercise__is_primary_muscle=False,
-            )
-
-        filtered_exercises = Exercise.objects.filter(q)
-        quantity = len(filtered_exercises) if len(filtered_exercises) < 10 else 10
-        exercises = random.sample(list(filtered_exercises), k=quantity)
+        queries = get_queries(data=validated_data)
+        exercises = get_filtered_exercises(queries=queries)
         workout = Workout.objects.create()
         workout_exercises = []
         for exercise in exercises:
@@ -306,4 +279,3 @@ class WorkoutSerializer(serializers.ModelSerializer):
         ).aggregate(Max("total_sets"))
 
     # TODO: investigate if these last two methods can be more efficient.
-    # TODO: receive list of primary and seconday muscles

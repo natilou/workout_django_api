@@ -32,6 +32,10 @@ def test_get_muscles_list(api_client_user, Muscle):
     assert resp.status_code == 200
     assert len(resp.json()["results"]) == 10
 
+    resp2 = api_client_user.get("/muscles/?page=2")
+    assert resp2.status_code == 200
+    assert len(resp2.json()["results"]) == 1
+
 
 def test_get_forces_list(api_client_user, Force):
     resp = api_client_user.get("/forces/")
