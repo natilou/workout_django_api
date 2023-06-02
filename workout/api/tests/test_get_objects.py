@@ -42,3 +42,19 @@ def test_get_forces_list(api_client_user, Force):
 
     assert resp.status_code == 200
     assert len(resp.json()["results"]) == 3
+
+
+def test_get_exercises_list(api_client_user, Exercise):
+    resp = api_client_user.get("/exercises/")
+
+    assert resp.status_code == 200
+    assert len(resp.json()["results"]) == 3
+
+
+def test_get_filtered_exercises_list(api_client_user, Exercise, MusclePerExercise):
+    resp = api_client_user.get(
+        "/exercises/?category=&equipment=&force=&level=&mechanic=&muscle=&primary_muscle=abs&secondary_muscle=shoulders"
+    )
+
+    assert resp.status_code == 200
+    assert len(resp.json()["results"]) == 1

@@ -10,6 +10,7 @@ omit =
    */workout/workout/*
    */conftest.py
    */manage.py
+   workout/api/tests/utils_tests.py
 
 [report]
 exclude_lines=

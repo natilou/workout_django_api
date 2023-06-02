@@ -17,7 +17,7 @@ router.register(r"muscles", MuscleViewSet)
 router.register(r"exercises", ExerciseViewSet)
 router.register(r"forces", ForceViewSet)
 router.register(r"users", UsersViewSet, basename="users")
-router.register(r"workout", WorkoutViewSet, basename="workouts")
+router.register(r"workouts", WorkoutViewSet, basename="workouts")
 
 urlpatterns = [
     path("", include(router.urls)),

@@ -24,7 +24,7 @@ def get_queries(data: dict()) -> Q:
 
 
 def get_filtered_exercises(queries: Q) -> list[Exercise]:
-    filtered_exercises = Exercise.objects.filter(queries)
+    filtered_exercises = Exercise.objects.filter(queries).distinct('name')
     quantity = len(filtered_exercises) if len(filtered_exercises) < 10 else 10
     exercises = random.sample(list(filtered_exercises), k=quantity)
 

@@ -29,43 +29,49 @@ def test_client_user_cannot_create_equipment(api_client_user):
     }
 
 
-def test_admin_user_can_create_level(api_client_admin):
+def test_admin_user_can_create_level(api_client_admin, Level):
     resp = api_client_admin.post("/levels/", {"name": "new level"})
+    level_created = Level.objects.get(name="new level")
 
     assert resp.status_code == 201
-    assert resp.json() == {'id': 4, 'name': 'new level'}
+    assert level_created is not None
 
 
-def test_admin_user_can_create_equipment(api_client_admin):
+def test_admin_user_can_create_equipment(api_client_admin, Equipment):
     resp = api_client_admin.post("/equipments/", {"name": "ball"})
+    equipment_created = Equipment.objects.get(name="ball")
 
     assert resp.status_code == 201
-    assert resp.json() == {'id': 7, 'name': 'ball'}
+    assert equipment_created is not None
 
 
-def test_admin_user_can_create_mechanic(api_client_admin):
+def test_admin_user_can_create_mechanic(api_client_admin, Mechanic):
     resp = api_client_admin.post("/mechanics/", {"name": "new mechanic"})
+    mechanic_created = Mechanic.objects.get(name="new mechanic")
 
     assert resp.status_code == 201
-    assert resp.json() == {'id': 3, 'name': 'new mechanic'}
+    assert mechanic_created is not None
 
 
-def test_admin_user_can_create_muscle(api_client_admin):
+def test_admin_user_can_create_muscle(api_client_admin, Muscle):
     resp = api_client_admin.post("/muscles/", {"name": "oblique abs"})
+    muscle_created = Muscle.objects.get(name="oblique abs")
 
     assert resp.status_code == 201
-    assert resp.json() == {'id': 12, 'name': 'oblique abs'}
+    assert muscle_created is not None
 
 
-def test_admin_user_can_create_force(api_client_admin):
+def test_admin_user_can_create_force(api_client_admin, Force):
     resp = api_client_admin.post("/forces/", {"name": "super pull"})
+    force_created = Force.objects.get(name="super pull")
 
     assert resp.status_code == 201
-    assert resp.json() == {'id': 4, 'name': 'super pull'}
+    assert force_created is not None
 
 
-def test_admin_user_can_create_category(api_client_admin):
+def test_admin_user_can_create_category(api_client_admin, Category):
     resp = api_client_admin.post("/categories/", {"name": "calisthenics"})
+    category_created = Category.objects.get(name="calisthenics")
 
     assert resp.status_code == 201
-    assert resp.json() == {'id': 8, 'name': 'calisthenics'}
+    assert category_created is not None
