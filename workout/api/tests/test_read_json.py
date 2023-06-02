@@ -1,25 +1,26 @@
 from tempfile import TemporaryDirectory
-from unittest.mock import mock_open, patch
+from unittest.mock import Mock, mock_open, patch
 
 import pytest
 from api.read_json import read_json
+from utils_tests import RETURNED_JSON_EXERCISES
 
 
 @pytest.mark.parametrize(
-    "field",
+    "field,expected_path",
     [
-        ("category"),
-        ("force"),
-        ("level"),
-        ("muscle"),
+        ("category", "./fixtures/category.json"),
+        ("force", "./fixtures/force.json"),
+        ("level", "./fixtures/level.json"),
+        ("muscle", "./fixtures/muscle.json"),
     ],
 )
-@patch("api.read_json.json.load")
-@patch("api.read_json.json.dumps")
-def test_read_json(mock_json_load, mock_json_dumps, field):
+def test_read_json(field, expected_path):
     with TemporaryDirectory():
-        with patch("builtins.open", mock_open()) as open_mocked:
-            read_json(field)
-        assert open_mocked.call_count == 2
-        handle = open_mocked()
-        handle.write.assert_called_once()
+        mock_file = mock_open()
+        with patch("api.read_json.open", mock_file):
+            mock_json_load = Mock(side_effect=[RETURNED_JSON_EXERCISES])
+            with patch("api.read_json.json.load", mock_json_load):
+                read_json(field)
+
+        assert mock_file.call_args[0][0] == expected_path

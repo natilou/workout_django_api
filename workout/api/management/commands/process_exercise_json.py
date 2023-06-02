@@ -10,11 +10,11 @@ class Command(BaseCommand):
             exercises = json.load(file)
             exercises_list = []
             for index, exercise in enumerate(exercises, start=1):
-                force = Force.objects.get(name=exercise["force"])
-                level = Level.objects.get(name=exercise["level"])
-                category = Category.objects.get(name=exercise["category"])
-                equipment = Equipment.objects.get(name=exercise["equipment"])
-                mechanic = Mechanic.objects.get(name=exercise["mechanic"])
+                force = Force.objects.get(name__iexact=exercise["force"])
+                level = Level.objects.get(name__iexact=exercise["level"])
+                category = Category.objects.get(name__iexact=exercise["category"])
+                equipment = Equipment.objects.get(name__iexact=exercise["equipment"])
+                mechanic = Mechanic.objects.get(name__iexact=exercise["mechanic"])
 
                 exercises_list.append(
                     {

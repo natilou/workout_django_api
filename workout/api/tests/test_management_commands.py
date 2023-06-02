@@ -1,14 +1,20 @@
-from django.core.management import call_command
 from tempfile import TemporaryDirectory
-from unittest.mock import mock_open, patch
+from unittest.mock import Mock, mock_open, patch
+import pytest
+from django.core.management import call_command
+from utils_tests import RETURNED_JSON_EXERCISES
 
 
-@patch("api.read_json.json.load")
-@patch("api.read_json.json.dumps")
-def test_process_exercise_json(mock_json_load, mock_json_dumps):
+@pytest.mark.django_db
+def test_process_exercise_json(Force, Level, Category, Equipment, Mechanic):
     with TemporaryDirectory():
-        with patch("builtins.open", mock_open()) as open_mocked:
-            call_command('process_exercise_json')
-        assert open_mocked.call_count == 2
-        handle = open_mocked()
-        handle.write.assert_called_once()
+        mock_file = mock_open()
+        with patch("api.management.commands.process_exercise_json.open", mock_file):
+            mock_json_load = Mock(side_effect=[RETURNED_JSON_EXERCISES])
+            with patch(
+                "api.management.commands.process_exercise_json.json.load",
+                mock_json_load,
+            ):
+                call_command("process_exercise_json")
+
+        assert mock_file.call_args[0][0] == "./api/fixtures/exercises.json"
