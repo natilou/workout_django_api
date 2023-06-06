@@ -13,6 +13,19 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+# Sentry configuration
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DNS"),
+    integrations=[
+        DjangoIntegration(),
+    ],
+    traces_sample_rate=1.0,
+    send_default_pii=True,
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -9,6 +9,7 @@ djangorestframework = "*"
 django-filter = "*"
 psycopg2-binary = "*"
 djangorestframework-simplejwt = "*"
+sentry-sdk = {extras = ["django"], version = "*"}
 
 [dev-packages]
 isort = "*"
