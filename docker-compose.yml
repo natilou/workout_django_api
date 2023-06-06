@@ -11,6 +11,7 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_HOST=db
       - DB_PORT=5432
+      - SENTRY_DNS=${SENTRY_DNS}
     volumes:
       - .:/src
     depends_on:
