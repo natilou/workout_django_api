@@ -18,7 +18,7 @@ from sentry_sdk.integrations.django import DjangoIntegration
 
 # Sentry configuration
 sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DNS"),
+    dsn=os.getenv("SENTRY_DSN"),
     integrations=[
         DjangoIntegration(),
     ],
