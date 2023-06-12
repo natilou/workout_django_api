@@ -3,26 +3,19 @@
         "model": "api.force",
         "pk": 1,
         "fields": {
-            "name": null
+            "name": "static"
         }
     },
     {
         "model": "api.force",
         "pk": 2,
         "fields": {
-            "name": "static"
-        }
-    },
-    {
-        "model": "api.force",
-        "pk": 3,
-        "fields": {
             "name": "push"
         }
     },
     {
         "model": "api.force",
-        "pk": 4,
+        "pk": 3,
         "fields": {
             "name": "pull"
         }

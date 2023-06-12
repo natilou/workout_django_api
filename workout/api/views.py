@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django_filters import rest_framework as filters
 from rest_framework import generics, permissions, status, views, viewsets
 from rest_framework.response import Response
@@ -17,6 +16,7 @@ from .models import (
     Level,
     Mechanic,
     Muscle,
+    User,
     Workout,
 )
 from .permissions import UserPermission
@@ -165,3 +165,4 @@ class LogoutAllView(views.APIView):
 class WorkoutViewSet(viewsets.ModelViewSet):
     serializer_class = WorkoutSerializer
     queryset = Workout.objects.all()
+    permission_classes = (permissions.IsAuthenticated,)

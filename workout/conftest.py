@@ -1,7 +1,9 @@
 import os
+from datetime import datetime
 
 import django
 import pytest
+from freezegun import freeze_time
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "workout.settings")
 django.setup()
@@ -9,8 +11,10 @@ from rest_framework.test import APIClient  # noqa
 
 
 @pytest.fixture()
-def User(django_user_model):
-    return django_user_model
+def User():
+    from api.models import User
+
+    return User
 
 
 @pytest.fixture()
@@ -34,6 +38,15 @@ def client_user(User):
 
 
 @pytest.fixture()
+def client_other_user(User):
+    return User.objects.create_user(
+        email="user2@mail.com",
+        username="testuser2",
+        password="password2",
+    )
+
+
+@pytest.fixture()
 def api_client_admin(admin_user):
     client = APIClient()
     client.force_authenticate(user=admin_user)
@@ -44,6 +57,13 @@ def api_client_admin(admin_user):
 def api_client_user(client_user):
     client = APIClient()
     client.force_authenticate(user=client_user)
+    return client
+
+
+@pytest.fixture()
+def api_client_other_user(client_other_user):
+    client = APIClient()
+    client.force_authenticate(user=client_other_user)
     return client
 
 
@@ -171,23 +191,53 @@ def MusclePerExercise(Muscle, Exercise):
     MusclePerExercise.objects.create(
         muscle=Muscle.objects.get(name="quadriceps"),
         exercise=Exercise.objects.get(name="Barbell Squat To A Bench"),
-        is_primary_muscle=True
+        is_primary_muscle=True,
     )
 
     MusclePerExercise.objects.create(
         muscle=Muscle.objects.get(name="forearms"),
         exercise=Exercise.objects.get(name="Deadlift with Chains"),
-        is_primary_muscle=False
+        is_primary_muscle=False,
     )
 
     MusclePerExercise.objects.create(
         muscle=Muscle.objects.get(name="abs"),
         exercise=Exercise.objects.get(name="Press Sit-Up"),
-        is_primary_muscle=True
+        is_primary_muscle=True,
     )
 
     MusclePerExercise.objects.create(
         muscle=Muscle.objects.get(name="shoulders"),
         exercise=Exercise.objects.get(name="Press Sit-Up"),
-        is_primary_muscle=False
+        is_primary_muscle=False,
     )
+
+
+@pytest.fixture()
+@freeze_time("2023-01-01")
+def Workout(Exercise, client_user):
+    from api.models import Workout
+
+    Workout.objects.create(
+        id=1,
+        created=datetime.now(),
+        user=client_user,
+    )
+    return Workout
+
+
+@pytest.fixture()
+def WorkoutExercise(Workout, Exercise):
+    from api.models import WorkoutExercise
+
+    WorkoutExercise.objects.create(
+        workout=Workout.objects.get(id=1),
+        exercise=Exercise.objects.get(name="Barbell Squat To A Bench"),
+    )
+
+    WorkoutExercise.objects.create(
+        workout=Workout.objects.get(id=1),
+        exercise=Exercise.objects.get(name="Deadlift with Chains"),
+    )
+
+    return WorkoutExercise

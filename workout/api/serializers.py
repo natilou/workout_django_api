@@ -1,14 +1,23 @@
-
-from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import F, Max
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import UniqueValidator
 
-from .helpers import get_queries, get_filtered_exercises
-
-from .models import (Category, Equipment, Exercise, Force, Image, Level,
-                     Mechanic, Muscle, Workout, WorkoutExercise)
+from .helpers import get_filtered_exercises, get_queries
+from .models import (
+    Category,
+    Equipment,
+    Exercise,
+    Force,
+    Image,
+    Level,
+    Mechanic,
+    Muscle,
+    User,
+    Workout,
+    WorkoutExercise,
+)
 
 
 class MuscleGroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -241,19 +250,21 @@ class WorkoutSerializer(serializers.ModelSerializer):
             "muscles",
             "reps_per_exercise",
             "total_sets",
+            "is_favorite",
         ]
 
     def create(self, validated_data):
+        request_user = self.context["request"].user
+        user = User.objects.get(id=request_user.id)
         queries = get_queries(data=validated_data)
         exercises = get_filtered_exercises(queries=queries)
-        workout = Workout.objects.create()
+        workout = Workout.objects.create(user=user)
         workout_exercises = []
         for exercise in exercises:
             workout_exercises.append(
                 WorkoutExercise(workout=workout, exercise=exercise)
             )
         WorkoutExercise.objects.bulk_create(workout_exercises)
-
         return workout
 
     def get_reps_per_exercise(self, obj):
@@ -279,3 +290,9 @@ class WorkoutSerializer(serializers.ModelSerializer):
         ).aggregate(Max("total_sets"))
 
     # TODO: investigate if these last two methods can be more efficient.
+
+    def update(self, instance, validated_data):
+        user = self.context["request"].user
+        if user.is_superuser or instance.user != user:
+            raise PermissionDenied("Action not allowed")
+        return super().update(instance, validated_data)

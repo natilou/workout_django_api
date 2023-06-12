@@ -10,11 +10,23 @@ class Command(BaseCommand):
             exercises = json.load(file)
             exercises_list = []
             for index, exercise in enumerate(exercises, start=1):
-                force = Force.objects.get(name__iexact=exercise["force"])
+                force = (
+                    Force.objects.get(name__iexact=exercise["force"])
+                    if exercise.get("force") is not None
+                    else None
+                )
                 level = Level.objects.get(name__iexact=exercise["level"])
                 category = Category.objects.get(name__iexact=exercise["category"])
-                equipment = Equipment.objects.get(name__iexact=exercise["equipment"])
-                mechanic = Mechanic.objects.get(name__iexact=exercise["mechanic"])
+                equipment = (
+                    Equipment.objects.get(name__iexact=exercise["equipment"])
+                    if exercise.get("equipment") is not None
+                    else None
+                )
+                mechanic = (
+                    Mechanic.objects.get(name__iexact=exercise["mechanic"])
+                    if exercise.get("mechanic") is not None
+                    else None
+                )
 
                 exercises_list.append(
                     {
@@ -23,11 +35,11 @@ class Command(BaseCommand):
                         "fields": {
                             "name": exercise["name"],
                             "instructions": exercise["instructions"],
-                            "force": force.id,
+                            "force": force.id if force else None,
                             "level": level.id,
                             "category": category.id,
-                            "equipment": equipment.id,
-                            "mechanic": mechanic.id,
+                            "equipment": equipment.id if equipment else None,
+                            "mechanic": mechanic.id if mechanic else None,
                         },
                     }
                 )
