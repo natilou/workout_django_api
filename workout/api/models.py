@@ -1,4 +1,23 @@
+from django.contrib.auth.models import User
 from django.db import models
+
+
+class User(User):
+    @property
+    def favorite_exercises(self):
+        return FavoriteExercise.objects.filter(user=self)
+
+    @property
+    def favorite_exercises_count(self) -> int:
+        return self.favorite_exercises.count()
+
+    @property
+    def favorite_workouts(self):
+        return Workout.objects.filter(user=self)
+
+    @property
+    def favorite_workouts_count(self) -> int:
+        return self.favorite_workouts.count()
 
 
 class Muscle(models.Model):
@@ -56,7 +75,7 @@ class Exercise(models.Model):
         Equipment, on_delete=models.CASCADE, related_name="exercises", null=True
     )
     level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name="exercises")
-    force = models.ForeignKey(Force, on_delete=models.CASCADE, related_name="exercises")
+    force = models.ForeignKey(Force, on_delete=models.CASCADE, related_name="exercises", null=True)
 
     @property
     def primary_muscles(self):
@@ -98,7 +117,13 @@ class Image(models.Model):
 
 class Workout(models.Model):
     created = models.DateField(auto_now_add=True)
-    exercises = models.ManyToManyField(Exercise, through="WorkoutExercise", related_name="workouts")
+    exercises = models.ManyToManyField(
+        Exercise, through="WorkoutExercise", related_name="workouts"
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="workouts", default=None
+    )
+    is_favorite = models.BooleanField(default=False)
 
 
 class WorkoutExercise(models.Model):
@@ -111,3 +136,13 @@ class WorkoutExercise(models.Model):
     )
     reps = models.IntegerField(default=5)
     sets = models.IntegerField(default=5)
+
+
+class FavoriteExercise(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="favorite_exercises"
+    )
+
+    exercise = models.ForeignKey(
+        Exercise, on_delete=models.CASCADE, related_name="favorite_exercises"
+    )

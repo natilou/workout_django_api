@@ -3,28 +3,28 @@
         "model": "api.equipment",
         "pk": 1,
         "fields": {
-            "name": "e-z curl bar"
+            "name": "foam roll"
         }
     },
     {
         "model": "api.equipment",
         "pk": 2,
         "fields": {
-            "name": "barbell"
+            "name": "body only"
         }
     },
     {
         "model": "api.equipment",
         "pk": 3,
         "fields": {
-            "name": "kettlebells"
+            "name": "cable"
         }
     },
     {
         "model": "api.equipment",
         "pk": 4,
         "fields": {
-            "name": "bands"
+            "name": "kettlebells"
         }
     },
     {
@@ -38,7 +38,7 @@
         "model": "api.equipment",
         "pk": 6,
         "fields": {
-            "name": "exercise ball"
+            "name": "machine"
         }
     },
     {
@@ -52,42 +52,35 @@
         "model": "api.equipment",
         "pk": 8,
         "fields": {
-            "name": "foam roll"
+            "name": "exercise ball"
         }
     },
     {
         "model": "api.equipment",
         "pk": 9,
         "fields": {
-            "name": "body only"
+            "name": "other"
         }
     },
     {
         "model": "api.equipment",
         "pk": 10,
         "fields": {
-            "name": "machine"
+            "name": "barbell"
         }
     },
     {
         "model": "api.equipment",
         "pk": 11,
         "fields": {
-            "name": "other"
-        }
-    },
-    {
-        "model": "api.equipment",
-        "pk": 12,
-        "fields": {
-            "name": null
+            "name": "e-z curl bar"
         }
     },
     {
         "model": "api.equipment",
         "pk": 13,
         "fields": {
-            "name": "cable"
+            "name": "bands"
         }
     }
 ]

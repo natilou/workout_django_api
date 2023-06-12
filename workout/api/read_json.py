@@ -22,6 +22,7 @@ def read_json(field: str) -> None:
                 },
             }
             for index, attribute in enumerate(attributes, start=1)
+            if attribute
         ]
 
         json_file = open(f"./fixtures/{field}.json", "w")
