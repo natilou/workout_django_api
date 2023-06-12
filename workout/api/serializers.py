@@ -234,12 +234,15 @@ class WorkoutSerializer(serializers.ModelSerializer):
     force = serializers.CharField(write_only=True, allow_blank=True, required=False)
     muscles = serializers.ListField(write_only=True, required=False)
     exercises = ExerciseSerializer(read_only=True, many=True)
+    id = serializers.IntegerField(read_only=True)
+    user = UserSerializer(read_only=True)
     reps_per_exercise = serializers.SerializerMethodField()
     total_sets = serializers.SerializerMethodField()
 
     class Meta:
         model = Workout
         fields = [
+            "id",
             "created",
             "exercises",
             "category",
@@ -251,6 +254,7 @@ class WorkoutSerializer(serializers.ModelSerializer):
             "reps_per_exercise",
             "total_sets",
             "is_favorite",
+            "user",
         ]
 
     def create(self, validated_data):
@@ -292,7 +296,8 @@ class WorkoutSerializer(serializers.ModelSerializer):
     # TODO: investigate if these last two methods can be more efficient.
 
     def update(self, instance, validated_data):
-        user = self.context["request"].user
+        request_user = self.context["request"].user
+        user = User.objects.get(id=request_user.id)
         if user.is_superuser or instance.user != user:
             raise PermissionDenied("Action not allowed")
         return super().update(instance, validated_data)
