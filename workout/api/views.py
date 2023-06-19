@@ -1,5 +1,6 @@
 from django_filters import rest_framework as filters
 from rest_framework import generics, permissions, status, views, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import (
     BlacklistedToken,
@@ -12,6 +13,7 @@ from .models import (
     Category,
     Equipment,
     Exercise,
+    FavoriteExercise,
     Force,
     Level,
     Mechanic,
@@ -106,6 +108,25 @@ class ExerciseViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ExerciseFilter
     permission_classes = [UserPermission]
+
+    @action(
+        methods=["post", "delete"],
+        detail=True,
+        permission_classes=[permissions.IsAuthenticated],
+    )
+    def favorite(self, request, pk=None):
+        exercise = Exercise.objects.get(id=pk)
+        request_user = request.user
+        user = User.objects.get(id=request_user.id)
+        favorite, created = FavoriteExercise.objects.get_or_create(
+            user=user, exercise=exercise
+        )
+        if request.method == "POST" and created:
+            return Response(status=201)
+        if request.method == "DELETE" and not created:
+            favorite.delete()
+            return Response(status=201)
+        return Response(status=400)
 
 
 class UsersViewSet(viewsets.ModelViewSet):

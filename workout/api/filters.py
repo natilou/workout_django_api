@@ -1,4 +1,4 @@
-from api.models import Exercise
+from api.models import Exercise, User
 from django_filters import rest_framework as filters
 
 
@@ -22,6 +22,11 @@ class ExerciseFilter(filters.FilterSet):
         label="Secondary muscle",
     )
 
+    favorites = filters.BooleanFilter(
+        method="filter_by_favorites",
+        label="Favorites",
+    )
+
     def filter_by_primary_muscle(self, queryset, name, value):
         return queryset.filter(
             muscle_per_exercise__muscle__name__iexact=value,
@@ -34,6 +39,12 @@ class ExerciseFilter(filters.FilterSet):
             muscle_per_exercise__is_primary_muscle=False,
         )
 
+    def filter_by_favorites(self, queryset, name, value):
+        if value:
+            request_user = self.request.user
+            user = User.objects.get(id=request_user.id)
+            return queryset.filter(favorite_exercises__user=user)
+
     class Meta:
         model = Exercise
         fields = [
@@ -45,4 +56,5 @@ class ExerciseFilter(filters.FilterSet):
             "muscle",
             "primary_muscle",
             "secondary_muscle",
+            "favorites",
         ]
