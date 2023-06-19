@@ -69,9 +69,7 @@ class TestFavoriteExercise:
         with pytest.raises(ObjectDoesNotExist):
             FavoriteExercise.objects.get(user=client_user, exercise=exercise)
 
-    def test_client_user_can_get_favorite_exercises(
-        client_user, api_client_user, Exercise
-    ):
+    def test_client_user_can_get_favorite_exercises(self, api_client_user, Exercise):
         exercise = Exercise.objects.get(id=1)
         exercise2 = Exercise.objects.get(id=2)
 
@@ -89,3 +87,27 @@ class TestFavoriteExercise:
 
         assert resp.status_code == 200
         assert resp.json()["count"] == 2
+
+    def test_client_already_has_favorite(self, api_client_user, Exercise):
+        exercise = Exercise.objects.get(id=1)
+
+        api_client_user.post(
+            f"/exercises/{exercise.id}/favorite/",
+        )
+
+        resp = api_client_user.post(
+            f"/exercises/{exercise.id}/favorite/",
+        )
+
+        assert resp.status_code == 400
+
+    def test_client_cannot_delete_non_existing_favorite(
+        self, api_client_user, Exercise
+    ):
+        exercise = Exercise.objects.get(id=1)
+
+        resp = api_client_user.delete(
+            f"/exercises/{exercise.id}/favorite/",
+        )
+
+        assert resp.status_code == 400
