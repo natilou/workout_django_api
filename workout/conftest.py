@@ -152,6 +152,7 @@ def Exercise(Level, Category, Mechanic, Equipment, Force):
     from api.models import Exercise
 
     Exercise.objects.create(
+        id=1,
         name="Press Sit-Up",
         instructions="steps to do it",
         category=Category.objects.get(name="strength"),
@@ -162,6 +163,7 @@ def Exercise(Level, Category, Mechanic, Equipment, Force):
     )
 
     Exercise.objects.create(
+        id=2,
         name="Deadlift with Chains",
         instructions="steps to do it",
         category=Category.objects.get(name="strength"),
@@ -172,6 +174,7 @@ def Exercise(Level, Category, Mechanic, Equipment, Force):
     )
 
     Exercise.objects.create(
+        id=3,
         name="Barbell Squat To A Bench",
         instructions="steps to do it",
         category=Category.objects.get(name="strength"),
@@ -241,3 +244,10 @@ def WorkoutExercise(Workout, Exercise):
     )
 
     return WorkoutExercise
+
+
+@pytest.fixture()
+def FavoriteExercise(User, Exercise):
+    from api.models import FavoriteExercise
+
+    return FavoriteExercise
