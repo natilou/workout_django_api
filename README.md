@@ -6,6 +6,7 @@ Welcome to the **WorkoutEmpire API**! This repository serves as the backend for 
 - **Workout Routines**: Users can create workout routines based on their preferences.
 - **Exercise Filtering**
 - **Users Management**
+- **Save favorite exercises and workout routines**
 
 ## Planned Features
 The WorkoutEmpire API aims to provide the following features:
