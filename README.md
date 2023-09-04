@@ -12,7 +12,6 @@ workout session made.
 
 ## Planned Features
 The WorkoutEmpire API aims to provide the following features:
-- **Exercise Tracking**: Users will be able to log their exercises, including details such as exercise type, duration, sets, reps, and weights used.
 - **Progress Monitoring**: Users will be able to track their progress, allowing users to monitor their development over time.
 - **Personalization**: The API will provide recommendations based on user preferences.
 
