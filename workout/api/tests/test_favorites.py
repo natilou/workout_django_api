@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 @pytest.mark.django_db
 class TestFavoriteWorkout:
-    def test_client_user_add_favorite_workout(self, api_client_user, Workout):
+    def test_client_user_add_favorite_workout(self, api_client_user, client_user, Workout):
         workout = Workout.objects.get(id=1)
         resp = api_client_user.patch(
             f"/workouts/{workout.id}/",
@@ -15,7 +15,10 @@ class TestFavoriteWorkout:
         assert resp.status_code == 200
 
         workout.refresh_from_db()
+        client_user.refresh_from_db()
         assert workout.is_favorite is True
+        assert client_user.favorite_workouts_count == 1
+        assert workout in client_user.favorite_workouts
 
     def test_client_user_cannot_add_favorite_workout(
         self, api_client_other_user, Workout
@@ -52,6 +55,9 @@ class TestFavoriteExercise:
         assert resp.status_code == 201
         assert FavoriteExercise.objects.get(user=client_user, exercise=exercise)
 
+        client_user.refresh_from_db()
+        assert client_user.favorite_exercises_count == 1
+
     def test_client_user_delete_favorite_exercise(
         self, client_user, api_client_user, Exercise, FavoriteExercise
     ):
@@ -65,7 +71,7 @@ class TestFavoriteExercise:
             f"/exercises/{exercise.id}/favorite/",
         )
 
-        assert resp.status_code == 201
+        assert resp.status_code == 200
         with pytest.raises(ObjectDoesNotExist):
             FavoriteExercise.objects.get(user=client_user, exercise=exercise)
 

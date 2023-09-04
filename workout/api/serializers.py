@@ -3,12 +3,13 @@ from django.db.models import F, Max
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import UniqueValidator
-
 from .helpers import get_filtered_exercises, get_queries
 from .models import (
     Category,
     Equipment,
     Exercise,
+    ExerciseLog,
+    FavoriteExercise,
     Force,
     Image,
     Level,
@@ -17,6 +18,7 @@ from .models import (
     User,
     Workout,
     WorkoutExercise,
+    WorkoutSession,
 )
 
 
@@ -301,3 +303,71 @@ class WorkoutSerializer(serializers.ModelSerializer):
         if user.is_superuser or instance.user != user:
             raise PermissionDenied("Action not allowed")
         return super().update(instance, validated_data)
+
+
+class FavoriteExerciseSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    exercise = ExerciseSerializer()
+
+    class Meta:
+        model = FavoriteExercise
+        fields = ["user", "exercise"]
+
+
+class ExerciseLogSerializer(serializers.ModelSerializer):
+    exercise = ExerciseSerializer()
+    sets_made = serializers.IntegerField()
+    reps_per_set_made = serializers.ListField(child=serializers.IntegerField(), min_length=1, max_length=sets_made)
+    weight_used = serializers.ListField(
+        child=serializers.DecimalField(max_digits=5, decimal_places=2),
+        allow_empty=True
+    )
+
+    class Meta:
+        model = ExerciseLog
+        fields = ["exercise", "sets_made", "reps_per_set_made", "weight_used"]
+
+
+class WorkoutSessionSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    start_datetime = serializers.DateTimeField()
+    end_datetime = serializers.DateTimeField()
+    location = serializers.CharField()
+    duration = serializers.SerializerMethodField()
+
+    class Meta:
+        model = WorkoutSession
+        fields = ["user", "start_datetime", "end_datetime", "duration", "location"]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.workout:
+            data["workout"] = self.get_workout(instance)
+        else:
+            data["exercise_log"] = self.get_exercise_log(instance)
+        return data
+
+    def get_workout(self, obj: WorkoutSession):
+        exercise_logs = ExerciseLog.objects.filter(workout_session_id=obj.id)
+        workout_data = WorkoutSerializer(obj.workout).data
+        exercise_logs_data = [ExerciseLogSerializer(log).data for log in exercise_logs]
+        exercise_logs_dict = {log["exercise"]["id"]: log for log in exercise_logs_data}
+
+        for exercise in workout_data["exercises"]:
+            exercise_id = exercise["id"]
+            if exercise_id in exercise_logs_dict:
+                exercise["exercise_logs"] = {
+                    "sets_made": exercise_logs_dict[exercise_id]["sets_made"],
+                    "reps_per_set_made": exercise_logs_dict[exercise_id]["reps_per_set_made"],
+                    "weight_used": exercise_logs_dict[exercise_id]["weight_used"],
+                }
+
+        return workout_data
+
+    def get_duration(self, obj: WorkoutSession):
+        duration = obj.end_datetime - obj.start_datetime
+        return duration.total_seconds() / 60
+
+    def get_exercise_log(self, obj: WorkoutSession):
+        exercise_log = ExerciseLog.objects.get(workout_session_id=obj.id)
+        return ExerciseLogSerializer(exercise_log).data

@@ -226,6 +226,13 @@ def Workout(Exercise, client_user):
         created=datetime.now(),
         user=client_user,
     )
+
+    Workout.objects.create(
+        id=2,
+        created=datetime.now(),
+        user=client_user,
+    )
+
     return Workout
 
 
@@ -251,3 +258,17 @@ def FavoriteExercise(User, Exercise):
     from api.models import FavoriteExercise
 
     return FavoriteExercise
+
+
+@pytest.fixture()
+def ExerciseLog(User, Exercise):
+    from api.models import ExerciseLog
+
+    return ExerciseLog
+
+
+@pytest.fixture()
+def WorkoutSession(User, Exercise, Workout):
+    from api.models import WorkoutSession
+
+    return WorkoutSession
