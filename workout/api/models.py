@@ -1,11 +1,13 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import CheckConstraint, Q, F, UniqueConstraint
+from django.core.exceptions import ValidationError
 
 
 class User(User):
     @property
     def favorite_exercises(self):
-        return FavoriteExercise.objects.filter(user=self)
+        return Exercise.objects.filter(favorite_exercises__user=self)
 
     @property
     def favorite_exercises_count(self) -> int:
@@ -13,7 +15,7 @@ class User(User):
 
     @property
     def favorite_workouts(self):
-        return Workout.objects.filter(user=self)
+        return Workout.objects.filter(user=self, is_favorite=True)
 
     @property
     def favorite_workouts_count(self) -> int:
@@ -145,4 +147,59 @@ class FavoriteExercise(models.Model):
 
     exercise = models.ForeignKey(
         Exercise, on_delete=models.CASCADE, related_name="favorite_exercises"
+    )
+
+
+class WorkoutSession(models.Model):
+    LOCATION_GYM = "gym"
+    LOCATION_HOME = "home"
+    LOCATION_OUTDOOR = "outdoor"
+    LOCATION_CHOICES = [
+        (LOCATION_GYM, "Gym"),
+        (LOCATION_HOME, "Home"),
+        (LOCATION_OUTDOOR, "Outdoor")
+    ]
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="workout_sessions", null=True, blank=True,
+    )
+    workout = models.ForeignKey(
+        Workout, on_delete=models.CASCADE, related_name="workout_sessions", null=True, blank=True,
+        )
+    start_datetime = models.DateTimeField()
+    end_datetime = models.DateTimeField()
+    location = models.CharField(
+        max_length=10,
+        choices=LOCATION_CHOICES,
+        default=LOCATION_HOME,
+    )
+
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                check=Q(end_datetime__gt=F("start_datetime")),
+                name="check_start_datime",
+            ),
+            UniqueConstraint(
+                fields=["start_datetime"],
+                name="unique_start_datetime",
+            ),
+        ]
+
+    def clean(self) -> None:
+        if self.workout:
+            self.user = self.workout.user
+        elif self.workout is None and self.user is None:
+            raise ValidationError("Either the user id or workout id must be specified")
+        super().clean()
+
+
+class ExerciseLog(models.Model):
+    exercise = models.ForeignKey(
+        Exercise, on_delete=models.CASCADE, related_name="exercises_logs"
+    )
+    sets_made = models.IntegerField()
+    reps_per_set_made = models.JSONField(default=[])
+    weight_used = models.JSONField(default=[])
+    workout_session = models.ForeignKey(
+        WorkoutSession, on_delete=models.CASCADE, related_name="exercises_logs"
     )

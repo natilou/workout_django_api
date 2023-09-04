@@ -13,6 +13,7 @@ from .models import (
     Category,
     Equipment,
     Exercise,
+    ExerciseLog,
     FavoriteExercise,
     Force,
     Level,
@@ -20,6 +21,7 @@ from .models import (
     Muscle,
     User,
     Workout,
+    WorkoutSession,
 )
 from .permissions import UserPermission
 from .serializers import (
@@ -35,6 +37,7 @@ from .serializers import (
     UpdateUserSerializer,
     UserSerializer,
     WorkoutSerializer,
+    WorkoutSessionSerializer,
 )
 
 
@@ -122,11 +125,41 @@ class ExerciseViewSet(viewsets.ModelViewSet):
             user=user, exercise=exercise
         )
         if request.method == "POST" and created:
-            return Response(status=201)
+            return Response(status=status.HTTP_201_CREATED)
         if request.method == "DELETE" and not created:
             favorite.delete()
-            return Response(status=201)
-        return Response(status=400)
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        methods=["post"],
+        detail=True,
+        permission_classes=[permissions.IsAuthenticated],
+    )
+    def logs(self, request, pk=None):
+        exercise = Exercise.objects.get(id=pk)
+        request_user = request.user
+        user = User.objects.get(id=request_user.id)
+        sets_made = request.data["sets_made"]
+        reps_made = request.data.getlist("reps_per_set_made")
+        weight_used = request.data.getlist("weight_used")
+        location = request.data.get("location", None)
+        end_datetime = request.data["end_datetime"]
+        start_datetime = request.data["start_datetime"]
+        workout_session = WorkoutSession.objects.create(
+            user=user,
+            location=location,
+            start_datetime=start_datetime,
+            end_datetime=end_datetime,
+        )
+        ExerciseLog.objects.create(
+            exercise=exercise,
+            sets_made=int(sets_made),
+            reps_per_set_made=reps_made,
+            weight_used=weight_used,
+            workout_session=workout_session
+        )
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class UsersViewSet(viewsets.ModelViewSet):
@@ -187,3 +220,9 @@ class WorkoutViewSet(viewsets.ModelViewSet):
     serializer_class = WorkoutSerializer
     queryset = Workout.objects.all()
     permission_classes = (permissions.IsAuthenticated,)
+
+
+class WorkoutSessionViewSet(viewsets.ModelViewSet):
+    serializer_class = WorkoutSessionSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = WorkoutSession.objects.all()
