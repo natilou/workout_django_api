@@ -33,8 +33,8 @@ class TestWorkoutSessions:
 
         resp = api_client_user.get("/workout_sessions/")
         assert resp.status_code == 200
-
         data = resp.json()["results"][0]
+        assert data["user"]["username"] == client_user.username
         assert data["start_datetime"] == "2023-01-01T08:00:00Z"
         assert data["end_datetime"] == "2023-01-01T08:30:00Z"
         assert data["duration"] == 30.0
