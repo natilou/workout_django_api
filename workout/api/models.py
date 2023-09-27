@@ -185,12 +185,12 @@ class WorkoutSession(models.Model):
             ),
         ]
 
-    def clean(self) -> None:
+    def save(self, *args, **kwargs) -> None:
         if self.workout:
             self.user = self.workout.user
         elif self.workout is None and self.user is None:
             raise ValidationError("Either the user id or workout id must be specified")
-        super().clean()
+        super().save(*args, **kwargs)
 
 
 class ExerciseLog(models.Model):
